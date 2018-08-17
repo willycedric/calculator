@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "calculator",
+                "projectName": "calculator",
+                "workingDirectory": "c:\\Users\\willy.dongmo\\source\\repos\\Practices\\Docker\\example-2\\calculator",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "calculator",
+                "projectName": "calculator",
+                "workingDirectory": "c:\\Users\\willy.dongmo\\source\\repos\\Practices\\Docker\\example-2\\calculator",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}
