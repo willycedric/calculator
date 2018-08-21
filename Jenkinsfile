@@ -7,19 +7,19 @@ pipeline {
   //   pollSCM('* * * * *')
   // }
 	
-  stages {
-    stage("Compile") {
-      steps {
-         sh "chmod +x gradlew"
-        sh "./gradlew compileJava"
-      }
-    }
+  // stages {
+  //   stage("Compile") {
+  //     steps {
+  //        sh "chmod +x gradlew"
+  //       sh "./gradlew compileJava"
+  //     }
+  //   }
 	  
-    stage("Unit test") {
-      steps {
-        sh "./gradlew test"
-      }
-    }
+  //   stage("Unit test") {
+  //     steps {
+  //       sh "./gradlew test"
+  //     }
+  //   }
 	
     // stage("Code coverage") {
     //   steps {
@@ -48,12 +48,6 @@ pipeline {
       }
     }
 
-    stage("Docker build") {
-      steps {
-        sh "docker build -t willycedric/calculator:${BUILD_TIMESTAMP} ."
-      }
-    }
-
     stage("Docker login") {
       steps {
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'willycedric',
@@ -62,6 +56,14 @@ pipeline {
         }
       }
     }
+
+    stage("Docker build") {
+      steps {
+        sh "docker build -t willycedric/calculator:${BUILD_TIMESTAMP} ."
+      }
+    }
+
+    
 
     stage("Docker push") {
       steps {
