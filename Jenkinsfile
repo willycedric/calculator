@@ -44,6 +44,7 @@ pipeline {
 
     stage("Build") {
       steps {
+        sh "chmod +x gradlew"
         sh "./gradlew build"
       }
     }
@@ -84,6 +85,7 @@ pipeline {
           }
       }     
 
+
     // stage("Deploy to staging") {
     //   steps {
     //     sh "ansible-playbook playbook.yml -i inventory/staging"
@@ -112,7 +114,7 @@ pipeline {
 	// sh "./smoke_test.sh 192.168.0.115"
   //     }
   //   }
-  }
+  
   post {
       always {
           sh "docker-compose down"
