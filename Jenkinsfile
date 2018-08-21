@@ -3,9 +3,9 @@ pipeline {
     label "remote-docker-slave"
   }
 	
-  triggers {
-    pollSCM('* * * * *')
-  }
+  // triggers {
+  //   pollSCM('* * * * *')
+  // }
 	
   stages {
     stage("Compile") {
@@ -21,26 +21,26 @@ pipeline {
       }
     }
 	
-    stage("Code coverage") {
-      steps {
-        sh "./gradlew jacocoTestReport"
-        publishHTML (target: [
-               reportDir: 'build/reports/jacoco/test/html',
-               reportFiles: 'index.html',
-               reportName: "JaCoCo Report" ])
-        sh "./gradlew jacocoTestCoverageVerification"
-      }
-    }
+    // stage("Code coverage") {
+    //   steps {
+    //     sh "./gradlew jacocoTestReport"
+    //     publishHTML (target: [
+    //            reportDir: 'build/reports/jacoco/test/html',
+    //            reportFiles: 'index.html',
+    //            reportName: "JaCoCo Report" ])
+    //     sh "./gradlew jacocoTestCoverageVerification"
+    //   }
+    // }
 
-    stage("Static code analysis") {
-      steps {
-        sh "./gradlew checkstyleMain"
-        publishHTML (target: [
-               reportDir: 'build/reports/checkstyle/',
-               reportFiles: 'main.html',
-               reportName: "Checkstyle Report" ])
-      }
-    }
+    // stage("Static code analysis") {
+    //   steps {
+    //     sh "./gradlew checkstyleMain"
+    //     publishHTML (target: [
+    //            reportDir: 'build/reports/checkstyle/',
+    //            reportFiles: 'main.html',
+    //            reportName: "Checkstyle Report" ])
+    //   }
+    // }
 
     stage("Build") {
       steps {
@@ -68,20 +68,33 @@ pipeline {
         sh "docker push willycedric/calculator:${BUILD_TIMESTAMP}"
       }
     }
-
     stage("Deploy to staging") {
       steps {
-        sh "ansible-playbook playbook.yml -i inventory/staging"
-        sleep 60
+          sh "docker-compose up -d"
       }
     }
 
     stage("Acceptance test") {
-      steps {
-        sh "chmod +x acceptance_test.sh"
-	      sh "./acceptance_test.sh 192.168.3.179"
-      }
-    }
+          steps {
+              sleep 60
+              sh "chmod +x acceptance_test.sh"
+              sh "./acceptance_test.sh"
+          }
+      }     
+
+    // stage("Deploy to staging") {
+    //   steps {
+    //     sh "ansible-playbook playbook.yml -i inventory/staging"
+    //     sleep 60
+    //   }
+    // }
+
+    // stage("Acceptance test") {
+    //   steps {
+    //     sh "chmod +x acceptance_test.sh"
+	  //     sh "./acceptance_test.sh 192.168.3.179"
+    //   }
+    // }
 	  
   //   // Performance test stages
 
@@ -97,5 +110,10 @@ pipeline {
 	// sh "./smoke_test.sh 192.168.0.115"
   //     }
   //   }
+  }
+  post {
+      always {
+          sh "docker-compose down"
+      }
   }
 }
