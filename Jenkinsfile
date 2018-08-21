@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label "remote-docker-slave"
+  }
 	
   triggers {
     pollSCM('* * * * *')
@@ -8,6 +10,7 @@ pipeline {
   stages {
     stage("Compile") {
       steps {
+         sh "chmod +x gradlew"
         sh "./gradlew compileJava"
       }
     }
@@ -47,13 +50,13 @@ pipeline {
 
     stage("Docker build") {
       steps {
-        sh "docker build -t leszko/calculator:${BUILD_TIMESTAMP} ."
+        sh "docker build -t willycedric/calculator:${BUILD_TIMESTAMP} ."
       }
     }
 
     stage("Docker login") {
       steps {
-        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'leszko',
+        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'willycedric',
                           usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
           sh "docker login --username $USERNAME --password $PASSWORD"
         }
@@ -62,7 +65,7 @@ pipeline {
 
     stage("Docker push") {
       steps {
-        sh "docker push leszko/calculator:${BUILD_TIMESTAMP}"
+        sh "docker push willycedric/calculator:${BUILD_TIMESTAMP}"
       }
     }
 
@@ -75,23 +78,24 @@ pipeline {
 
     stage("Acceptance test") {
       steps {
-	sh "./acceptance_test.sh 192.168.0.166"
+        sh "chmod +x acceptance_test.sh"
+	      sh "./acceptance_test.sh 192.168.3.179"
       }
     }
 	  
-    // Performance test stages
+  //   // Performance test stages
 
-    stage("Release") {
-      steps {
-        sh "ansible-playbook playbook.yml -i inventory/production"
-        sleep 60
-      }
-    }
+  //   stage("Release") {
+  //     steps {
+  //       sh "ansible-playbook playbook.yml -i inventory/production"
+  //       sleep 60
+  //     }
+  //   }
 
-    stage("Smoke test") {
-      steps {
-	sh "./smoke_test.sh 192.168.0.115"
-      }
-    }
+  //   stage("Smoke test") {
+  //     steps {
+	// sh "./smoke_test.sh 192.168.0.115"
+  //     }
+  //   }
   }
 }
