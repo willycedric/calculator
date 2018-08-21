@@ -41,7 +41,7 @@ pipeline {
     //            reportName: "Checkstyle Report" ])
     //   }
     // }
-
+  stages{
     stage("Build") {
       steps {
         sh "chmod +x gradlew"
@@ -114,7 +114,7 @@ pipeline {
 	// sh "./smoke_test.sh 192.168.0.115"
   //     }
   //   }
-  
+  }
   post {
       always {
           sh "docker-compose down"
